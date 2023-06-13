@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:vtr_util/services/scrap_services/veiculo_scrap.dart';
 
 void main() {
+  VeiculoScrap().getByPlaca('MLA7704');
   runApp(const MainApp());
 }
 
