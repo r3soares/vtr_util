@@ -46,6 +46,7 @@ class CertificadoBase {
         capacidadeTotal: int.parse(capTotalTanque),
         marcaTanque: marcaTanque,
         marcaVeiculo: marcaVeiculo,
+        chassiVeiculo: chassi,
         dadosPneus: dadosPneus);
   }
 
