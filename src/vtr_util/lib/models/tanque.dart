@@ -9,6 +9,7 @@ class Tanque {
   final int capacidadeTotal;
   final String marcaTanque;
   final String marcaVeiculo;
+  final String chassiVeiculo;
   final List<String> dadosPneus;
 
   Tanque(
@@ -20,5 +21,6 @@ class Tanque {
       required this.capacidadeTotal,
       required this.marcaTanque,
       required this.marcaVeiculo,
+      required this.chassiVeiculo,
       required this.dadosPneus});
 }

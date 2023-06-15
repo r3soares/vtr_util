@@ -58,7 +58,6 @@ class BasePdfReader {
 
   getDadosCert(List<String> docFinal) {
     CertificadoBase cert = CertificadoBase(certificado: docFinal);
-    print(cert.tecResponsavel);
   }
 
   //Vai para a classe CertificadoPdfReader
@@ -82,8 +81,9 @@ class BasePdfReader {
     if (texto == 'EXEC.') return true;
     if (texto == 'IDENTIFICAÇÃO DO TANQUE DE CARGA') return true;
     // if (texto == 'DOCNº. CERTIFICADO') return true;
-    if (texto == 'REFERÊNCIA DAS DIMENSÕESDIMENSÕES DO TANQUECOFRE')
+    if (texto == 'REFERÊNCIA DAS DIMENSÕESDIMENSÕES DO TANQUECOFRE') {
       return true;
+    }
     if (texto == 'IDENTIFICAÇÃO DO VEÍCULODIMENSÕES DOS PNEUS') return true;
     if (texto == 'Marca:Ano de Fabricação:Nº de Série:') return true;
     if (texto == 'Licença:UF:') return true;
@@ -92,23 +92,29 @@ class BasePdfReader {
     if (texto == 'CERTIFICADO DE VERIFICAÇÃO DE VEÍCULO ') return true;
     if (texto == 'TANQUE RODOVIÁRIO ') return true;
     if (texto == 'VALOR: R\$') return true;
-    if (texto.startsWith('Este Certificado deve permanecer no veículo'))
+    if (texto.startsWith('Este Certificado deve permanecer no veículo')) {
       return true;
-    if (texto.startsWith('prévia desgaseificação. Os espaços vazio,'))
+    }
+    if (texto.startsWith('prévia desgaseificação. Os espaços vazio,')) {
       return true;
+    }
     // if (texto == 'IDENTIFICAÇÃO DO TANQUE DE CARGA') return true;
     if (texto ==
-        'INSTITUTO NACIONAL DE METROLOGIA, QUALIDADE E TECNOLOGIA - INMETRO')
+        'INSTITUTO NACIONAL DE METROLOGIA, QUALIDADE E TECNOLOGIA - INMETRO') {
       return true;
+    }
     if (texto ==
-        'MINISTÉRIO DO DESENVOLVIMENTO, INDÚSTRIA, COMÉRCIO E SERVIÇOS')
+        'MINISTÉRIO DO DESENVOLVIMENTO, INDÚSTRIA, COMÉRCIO E SERVIÇOS') {
       return true;
+    }
     if (texto == 'Nº.CERTIFICADO') return true;
-    if (texto == 'A autenticidade deste documento poderá ser conferida em:')
+    if (texto == 'A autenticidade deste documento poderá ser conferida em:') {
       return true;
+    }
     if (texto == 'ou pela leitura do QR-CODE.') return true;
-    if (texto == 'CERTIFICADO DE VERIFICAÇÃO DE VEÍCULO TANQUE RODOVIÁRIO ')
+    if (texto == 'CERTIFICADO DE VERIFICAÇÃO DE VEÍCULO TANQUE RODOVIÁRIO ') {
       return true;
+    }
     if (texto == 'Marca:') return true;
     if (texto == '1º EIXO') return true;
     if (texto == '2º EIXO') return true;
