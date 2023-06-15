@@ -13,7 +13,7 @@ class Database {
 
   Database._internal();
 
-  init() async {
+  Future<List<ServicoVtr>> init() async {
     try {
       if (await Preferences.readData('361') != null) {
         var decoder = const JsonDecoder();

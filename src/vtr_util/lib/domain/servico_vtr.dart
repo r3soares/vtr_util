@@ -23,6 +23,6 @@ class ServicoVtr {
         'valor': valor,
         'valorAnterior': valorAnterior,
         'pontos': pontos,
-        'descicao': descricao,
+        'descricao': descricao,
       };
 }
