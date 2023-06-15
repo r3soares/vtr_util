@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'package:vtr_util/services/pdf_services/certificado_pdf_reader.dart';
 import 'package:vtr_util/services/scrap_services/base_scrap.dart';
 import 'package:vtr_util/services/scrap_services/urls.dart';
 import 'package:beautiful_soup_dart/beautiful_soup.dart';
@@ -20,6 +21,14 @@ class VeiculoScrap extends BaseScrap {
     final htmlDetalhesCertificado =
         await loadPage(URL_DETALHES, dadosCertificado);
     final dadosVeiculo = _getDadosVeiculo(htmlDetalhesCertificado);
+
+    final dadosConsulta = {
+      'id': dadosVeiculo['ultimoCertificado'],
+      'tipoInstrumento': 'VeiculoTanque',
+      'uf': dadosVeiculo['uf'],
+    };
+    final pdf = await loadPage(URL_CERTIFICADO, dadosConsulta);
+    final dadosFinais = await _getPDFCertificado(pdf);
   }
 
   Map<String, String> _getUltimaVerificacao(String html) {
@@ -138,5 +147,9 @@ class VeiculoScrap extends BaseScrap {
     return certificado.toString();
   }
 
-  _getPDFCertificado() {}
+  _getPDFCertificado(String pdf) async {
+    final pdfReader = CertificadoPdfReader();
+    pdfReader.loadPdf(pdf);
+    //pdfReader.loadPdf(pdf);
+  }
 }
