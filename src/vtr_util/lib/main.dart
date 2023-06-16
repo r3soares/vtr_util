@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:vtr_util/domain/servico_vtr.dart';
 import 'package:vtr_util/infra/database.dart';
+import 'package:vtr_util/models/interfaces/i_veiculo_scrap.dart';
 import 'package:vtr_util/pages/home_page.dart';
 import 'package:vtr_util/pages/settings_page.dart';
 import 'package:vtr_util/services/pdf_services/base_pdf_reader.dart';
@@ -16,6 +17,7 @@ import 'package:flutter/material.dart';
 import 'constantes_material.dart';
 
 void main() async {
+  HttpOverrides.global = new MyHttpOverrides();
   WidgetsFlutterBinding.ensureInitialized();
   await Database().init();
   runApp(
@@ -111,10 +113,22 @@ class _AppState extends State<App> {
         ),
         initialRoute: '/',
         routes: {
-          '/': (context) => const HomePage(),
+          '/': (context) => Provider<IVeiculoScrap>(
+                create: (_) => VeiculoScrap(),
+                child: const HomePage(),
+              ),
           '/settings': (context) => SettingsPage(),
         },
       ),
     );
+  }
+}
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
   }
 }

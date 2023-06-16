@@ -1,8 +1,10 @@
+import 'dart:convert';
+
 import 'package:vtr_util/models/compartimento.dart';
 
 import '../../../models/tanque.dart';
 
-class CertificadoBase {
+class CertificadoExtractor {
   final List<String> certificado;
   late String versao;
   late String ipem;
@@ -15,7 +17,7 @@ class CertificadoBase {
   late String validade;
   late String gru;
   late Tanque tanque;
-  CertificadoBase({required this.certificado}) {
+  CertificadoExtractor({required this.certificado}) {
     ipem = _getIpem();
     ipemEndereco = _getIpemEndereco();
     ipemTelefone = _getIpemTelefone();
@@ -49,6 +51,20 @@ class CertificadoBase {
         chassiVeiculo: chassi,
         dadosPneus: dadosPneus);
   }
+
+  Map<String, dynamic> toJson() => {
+        'versao': versao,
+        'ipem': ipem,
+        'ipemEndereco': ipemEndereco,
+        'ipemTelefone': ipemTelefone,
+        'dataEmissao': dataEmissao,
+        'resultado': resultado,
+        'tecExecutor': tecExecutor,
+        'tecResponsavel': tecResponsavel,
+        'validade': validade,
+        'gru': gru,
+        'tanque': tanque.toJson(),
+      };
 
   _criaCompartimentos(List<int> capacidades, List<List<int>> setas) {
     List<Compartimento> compartimentos = [];

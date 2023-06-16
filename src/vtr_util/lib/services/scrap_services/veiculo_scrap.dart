@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'package:vtr_util/models/interfaces/i_veiculo_scrap.dart';
 import 'package:vtr_util/services/pdf_services/certificado_pdf_reader.dart';
 import 'package:vtr_util/services/scrap_services/base_scrap.dart';
 import 'package:vtr_util/services/scrap_services/urls.dart';
@@ -6,10 +7,11 @@ import 'package:beautiful_soup_dart/beautiful_soup.dart';
 
 //MLA7704
 //
-class VeiculoScrap extends BaseScrap {
+class VeiculoScrap extends BaseScrap implements IVeiculoScrap {
   final DateFormat formato = DateFormat('dd/MM/yyyy');
 
-  getByPlaca(String placa) async {
+  @override
+  Future<Map<String, dynamic>> getByPlaca(String placa) async {
     final dados = {
       'Placa': placa,
       'SelectedTipoClassificacaoInstrumento': '315',
@@ -28,7 +30,8 @@ class VeiculoScrap extends BaseScrap {
       'uf': dadosVeiculo['uf'],
     };
     final pdf = await loadPage(URL_CERTIFICADO, dadosConsulta);
-    final dadosFinais = await _getPDFCertificado(pdf);
+    final dadosFinaisEmJson = await _getPDFCertificado(pdf);
+    return dadosFinaisEmJson;
   }
 
   Map<String, String> _getUltimaVerificacao(String html) {
@@ -147,9 +150,9 @@ class VeiculoScrap extends BaseScrap {
     return certificado.toString();
   }
 
-  _getPDFCertificado(String pdf) async {
+  Future<Map<String, dynamic>> _getPDFCertificado(String pdf) async {
     final pdfReader = CertificadoPdfReader();
-    pdfReader.loadPdf(pdf);
+    return pdfReader.getDadosCertificado(pdf);
     //pdfReader.loadPdf(pdf);
   }
 }
