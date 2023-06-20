@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:vtr_util/models/compartimento.dart';
 
 import '../../../models/tanque.dart';

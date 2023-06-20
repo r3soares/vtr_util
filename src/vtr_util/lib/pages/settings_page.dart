@@ -188,9 +188,9 @@ class SettingsPage extends StatelessWidget {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Dados salvos com sucesso!'),
-          content: SingleChildScrollView(
+          content: const SingleChildScrollView(
             child: ListBody(
-              children: const <Widget>[
+              children: <Widget>[
                 Text('O app precisa ser reiniciado.'),
               ],
             ),
