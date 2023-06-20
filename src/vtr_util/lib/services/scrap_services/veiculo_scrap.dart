@@ -46,7 +46,7 @@ class VeiculoScrap extends BaseScrap implements IVeiculoScrap {
     final trs = tabela!.findAll('tr');
     trs.removeAt(0); //Remove Cabeçalho da tabela
     var ultimaVerificacao = '';
-    var dataMaisAtual = DateTime.now().subtract(Duration(days: 360000));
+    var dataMaisAtual = DateTime.now().subtract(const Duration(days: 360000));
     for (var child in trs) {
       final tds = child.findAll('td');
       final dataValidade = formato.parse(tds[9].text);

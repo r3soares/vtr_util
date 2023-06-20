@@ -54,9 +54,9 @@ class Database {
             s.cod.toString(), encoder.convert(s.toJson()));
       }
       return servicos;
-    } on Exception catch (ex) {
+    } on Exception {
       print('Erro ao buscar dados no shared Preferences');
-      throw ex;
+      rethrow;
     }
   }
 }
