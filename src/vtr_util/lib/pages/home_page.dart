@@ -125,6 +125,20 @@ class HomePage extends StatelessWidget {
             ],
           ),
         ),
+        Card(
+          child: Column(
+            children: [
+              const Text(
+                'Certificado',
+                style: TextStyle(fontSize: 20),
+              ),
+              ListTile(
+                title: const Text('Data de Verificação'),
+                trailing: Text(cert.dataVerificacao),
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }

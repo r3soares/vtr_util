@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 import 'base_pdf_reader.dart';

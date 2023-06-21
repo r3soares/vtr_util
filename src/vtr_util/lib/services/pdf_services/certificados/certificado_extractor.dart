@@ -12,7 +12,8 @@ class CertificadoExtractor {
   late String resultado;
   late String tecExecutor;
   late String tecResponsavel;
-  late String validade;
+  late String dataValidade;
+  late String dataVerificacao;
   late String gru;
   late Tanque tanque;
   CertificadoExtractor({required this.certificado}) {
@@ -25,7 +26,8 @@ class CertificadoExtractor {
     resultado = _getResultado();
     tecExecutor = _getTecnicoExecutor();
     tecResponsavel = _getTecnicoResponsavel();
-    validade = _getValidade();
+    dataValidade = _getValidade();
+    dataVerificacao = _getVerificacao();
     gru = _getGRU();
     final (String inmetro, int compartimentos) = _getInmetroCompartimentos();
     final capTotalTanque = _getCapTotalTanque();
@@ -59,7 +61,8 @@ class CertificadoExtractor {
         'resultado': resultado,
         'tecExecutor': tecExecutor,
         'tecResponsavel': tecResponsavel,
-        'validade': validade,
+        'dataValidade': dataValidade,
+        'dataVerificacao': dataVerificacao,
         'gru': gru,
         'tanque': tanque.toJson(),
       };
@@ -121,6 +124,17 @@ class CertificadoExtractor {
         return certificado[posicao + 1];
       case 'VT3011':
         return certificado[posicao].replaceFirst('VÁLIDO ATÉ', '');
+    }
+  }
+
+  _getVerificacao() {
+    final int posicao =
+        certificado.indexWhere((e) => e.startsWith('DATA VERIFICAÇÃO'));
+    switch (versao) {
+      case 'VT3012':
+        return certificado[posicao + 1];
+      case 'VT3011':
+        return certificado[posicao].replaceFirst('DATA VERIFICAÇÃO:', '');
     }
   }
 

@@ -11,7 +11,8 @@ class Certificado {
   final String resultado;
   final String tecExecutor;
   final String tecResponsavel;
-  final String validade;
+  final String dataValidade;
+  final String dataVerificacao;
   final String gru;
   final Tanque tanque;
 
@@ -24,7 +25,8 @@ class Certificado {
       this.resultado,
       this.tecExecutor,
       this.tecResponsavel,
-      this.validade,
+      this.dataValidade,
+      this.dataVerificacao,
       this.gru,
       this.tanque);
 
@@ -38,7 +40,8 @@ class Certificado {
       'resultado': resultado,
       'tecExecutor': tecExecutor,
       'tecResponsavel': tecResponsavel,
-      'validade': validade,
+      'dataValidade': dataValidade,
+      'dataVerificacao': dataVerificacao,
       'gru': gru,
       'tanque': tanque.toJson(),
     };
@@ -54,7 +57,8 @@ class Certificado {
       json['resultado'] as String,
       json['tecExecutor'] as String,
       json['tecResponsavel'] as String,
-      json['validade'] as String,
+      json['dataValidade'] as String,
+      json['dataVerificacao'] as String,
       json['gru'] as String,
       Tanque.fromJson(json['tanque'] as Map<String, dynamic>),
     );
@@ -62,7 +66,7 @@ class Certificado {
 
   @override
   String toString() {
-    return 'Certificado(versao: $versao, ipem: $ipem, ipemEndereco: $ipemEndereco, ipemTelefone: $ipemTelefone, dataEmissao: $dataEmissao, resultado: $resultado, tecExecutor: $tecExecutor, tecResponsavel: $tecResponsavel, validade: $validade, gru: $gru, tanque: $tanque)';
+    return 'Certificado(versao: $versao, ipem: $ipem, ipemEndereco: $ipemEndereco, ipemTelefone: $ipemTelefone, dataEmissao: $dataEmissao, resultado: $resultado, tecExecutor: $tecExecutor, tecResponsavel: $tecResponsavel, validade: $dataValidade, gru: $gru, tanque: $tanque)';
   }
 
   @override
@@ -77,7 +81,7 @@ class Certificado {
         other.resultado == resultado &&
         other.tecExecutor == tecExecutor &&
         other.tecResponsavel == tecResponsavel &&
-        other.validade == validade &&
+        other.dataValidade == dataValidade &&
         other.gru == gru &&
         other.tanque == tanque;
   }
@@ -92,7 +96,7 @@ class Certificado {
         resultado.hashCode ^
         tecExecutor.hashCode ^
         tecResponsavel.hashCode ^
-        validade.hashCode ^
+        dataValidade.hashCode ^
         gru.hashCode ^
         tanque.hashCode;
   }
