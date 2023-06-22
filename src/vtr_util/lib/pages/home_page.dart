@@ -59,6 +59,29 @@ class HomePage extends StatelessWidget {
     final certBloc = context.read<CertificadoBloc>();
     final certificadoJson = await veiculoScrap.getByPlaca(placa);
     Certificado cert = Certificado.fromJson(certificadoJson);
+    // final cert = Certificado(
+    //     'versao',
+    //     'ipem',
+    //     'ipemEndereco',
+    //     'ipemTelefone',
+    //     'dataEmissao',
+    //     'resultado',
+    //     'tecExecutor',
+    //     'tecResponsavel',
+    //     'dataValidade',
+    //     'dataVerificacao',
+    //     'gru',
+    //     Tanque(
+    //         inmetro: 'inmetro',
+    //         placa: 'placa',
+    //         compartimentos: [Compartimento(5000, [])],
+    //         letras: [],
+    //         isCofre: false,
+    //         capacidadeTotal: 5000,
+    //         marcaTanque: 'marcaTanque',
+    //         marcaVeiculo: 'marcaVeiculo',
+    //         chassiVeiculo: 'chassiVeiculo',
+    //         dadosPneus: []));
     certBloc.update(cert);
     print(cert.versao);
   }
@@ -80,66 +103,36 @@ class HomePage extends StatelessWidget {
     }
     final custoTotal = custo.getCustoTotal(capacidades, setas);
     final codigos = geraCodigosServicos(cert.tanque, custo);
-    return GridView.count(
-      primary: false,
-      childAspectRatio: .5,
-      padding: const EdgeInsets.all(20),
-      shrinkWrap: true,
-      crossAxisSpacing: 10,
-      mainAxisSpacing: 10,
-      crossAxisCount: 4,
-      children: <Widget>[
-        Card(
-          child: Column(
-            children: [
-              const Text(
-                'Informações gerais',
-                style: TextStyle(fontSize: 20),
-              ),
-              ListTile(
-                title: const Text('Valor GRU'),
-                trailing: Text('R\$$custoTotal'),
-              ),
-              ListTile(
-                  title: const Text('Compartimentos'),
-                  trailing: Text('${capacidades.length}')),
-              ListTile(
-                title: const Text('Setas'),
-                trailing: Text('$setas'),
-              ),
-            ],
-          ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 600),
+      child: Card(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              cert.tanque.placa,
+              style: const TextStyle(fontSize: 24),
+            ),
+            Text(
+              cert.tanque.inmetro,
+              style: const TextStyle(fontSize: 18),
+            ),
+            ListTile(
+              title: const Text('Verificado em:'),
+              trailing: Text(cert.dataVerificacao),
+            ),
+            Text(
+              '$codigos',
+              style: const TextStyle(fontSize: 20),
+              maxLines: 8,
+            ),
+            ListTile(
+              title: const Text('Valor GRU:'),
+              trailing: Text('R\$ $custoTotal'),
+            ),
+          ],
         ),
-        Card(
-          child: Column(
-            children: [
-              const Text(
-                'Códigos de serviço',
-                style: TextStyle(fontSize: 20),
-              ),
-              Text(
-                '$codigos',
-                style: const TextStyle(fontSize: 20),
-                maxLines: 8,
-              ),
-            ],
-          ),
-        ),
-        Card(
-          child: Column(
-            children: [
-              const Text(
-                'Certificado',
-                style: TextStyle(fontSize: 20),
-              ),
-              ListTile(
-                title: const Text('Data de Verificação'),
-                trailing: Text(cert.dataVerificacao),
-              ),
-            ],
-          ),
-        ),
-      ],
+      ),
     );
   }
 
@@ -159,11 +152,11 @@ class HomePage extends StatelessWidget {
     List<String> valores = [];
     mapCodigos.forEach((key, value) {
       valores.add(
-          '$value x $key = R\$ ${(custo.getCustoByCodServico(key) * value).toStringAsFixed(2)}');
+          '$key x $value = R\$ ${(custo.getCustoByCodServico(key) * value).toStringAsFixed(2)}');
     });
     if (setas > 0) {
       valores.add(
-          '$setas x ${custo.codDispReferencial} = R\$ ${custo.custoSetas(setas).toStringAsFixed(2)}');
+          '${custo.codDispReferencial} x $setas = R\$ ${custo.custoSetas(setas).toStringAsFixed(2)}');
     }
     return valores.fold(
         '', (previousValue, element) => '$previousValue\n$element');
