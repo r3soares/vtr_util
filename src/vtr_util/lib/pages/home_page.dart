@@ -8,8 +8,15 @@ import 'package:vtr_util/models/compartimento.dart';
 import 'package:vtr_util/models/interfaces/i_veiculo_scrap.dart';
 import 'package:vtr_util/models/tanque.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  bool isLoading = false;
   @override
   Widget build(BuildContext context) {
     TextEditingController placaController = TextEditingController();
@@ -39,10 +46,12 @@ class HomePage extends StatelessWidget {
               Center(
                 child: Padding(
                   padding: const EdgeInsets.all(8),
-                  child: TextButton(
-                      onPressed: () async =>
-                          await _buscaPLaca(placaController.text, context),
-                      child: const Text('Buscar')),
+                  child: isLoading
+                      ? const Text('Aguarde')
+                      : TextButton(
+                          onPressed: () async =>
+                              await _buscaPLaca(placaController.text, context),
+                          child: const Text('Buscar')),
                 ),
               ),
               Expanded(
@@ -55,6 +64,12 @@ class HomePage extends StatelessWidget {
 
   _buscaPLaca(String placa, BuildContext context) async {
     print('buscando placa.. $placa');
+    setState(() {
+      isLoading = true;
+    });
+
+    const snackBar = SnackBar(content: Text('Buscando..'));
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
     final veiculoScrap = context.read<IVeiculoScrap>();
     final certBloc = context.read<CertificadoBloc>();
     final certificadoJson = await veiculoScrap.getByPlaca(placa);
@@ -83,6 +98,10 @@ class HomePage extends StatelessWidget {
     //         chassiVeiculo: 'chassiVeiculo',
     //         dadosPneus: []));
     certBloc.update(cert);
+    setState(() {
+      isLoading = false;
+    });
+
     print(cert.versao);
   }
 

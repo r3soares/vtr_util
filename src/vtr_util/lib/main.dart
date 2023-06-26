@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:vtr_util/blocs/certificado_bloc.dart';
+import 'package:vtr_util/blocs/loading_bloc.dart';
 import 'package:vtr_util/domain/servico_vtr.dart';
 import 'package:vtr_util/infra/database.dart';
 import 'package:vtr_util/models/interfaces/i_veiculo_scrap.dart';
@@ -117,7 +118,7 @@ class _AppState extends State<App> {
                   ),
                   ChangeNotifierProvider<CertificadoBloc>(
                     create: (_) => CertificadoBloc(),
-                  )
+                  ),
                 ],
                 child: const HomePage(),
               ),
