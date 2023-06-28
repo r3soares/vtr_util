@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.vtr_util">
+    <uses-permission android:name="android.permission.INTERNET" />
    <application
         android:label="vtr_util"
         android:name="${applicationName}"

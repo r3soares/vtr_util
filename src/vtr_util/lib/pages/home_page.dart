@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:vtr_util/blocs/certificado_bloc.dart';
 import 'package:vtr_util/domain/custo_compartimento.dart';
 import 'package:vtr_util/domain/servico_vtr.dart';
+import 'package:vtr_util/extensions/upper_case_text_formatter.dart';
 import 'package:vtr_util/models/certificado.dart';
 import 'package:vtr_util/models/compartimento.dart';
 import 'package:vtr_util/models/interfaces/i_veiculo_scrap.dart';
@@ -16,10 +18,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final formatCurrency = NumberFormat.simpleCurrency(locale: 'pt_BR');
   bool isLoading = false;
+  final TextEditingController placaController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    TextEditingController placaController = TextEditingController();
+    final size = MediaQuery.of(context).size;
     return Scaffold(
       body: Padding(
           padding: const EdgeInsets.all(8),
@@ -27,27 +31,34 @@ class _HomePageState extends State<HomePage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 150, vertical: 8),
+                padding: EdgeInsets.only(
+                    left: size.width * .15,
+                    right: size.width * .15,
+                    top: size.height * .05),
                 child: TextField(
                   controller: placaController,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
+                  onSubmitted: (_) async =>
+                      await _buscaPLaca(placaController.text, context),
+                  decoration: InputDecoration(
+                    suffixIcon: IconButton(
+                        splashRadius: 5,
+                        iconSize: 18,
+                        onPressed: () => placaController.clear(),
+                        icon: const Icon(
+                          Icons.clear,
+                        )),
+                    border: const OutlineInputBorder(),
                     labelText: 'Informe a placa',
                   ),
                   maxLength: 7,
-                  onChanged: (value) {
-                    placaController.value = TextEditingValue(
-                        text: value.toUpperCase(),
-                        selection: placaController.selection);
-                  },
+                  inputFormatters: [UpperCaseTextFormatter()],
                 ),
               ),
               Center(
                 child: Padding(
                   padding: const EdgeInsets.all(8),
                   child: isLoading
-                      ? const Text('Aguarde')
+                      ? const CircularProgressIndicator()
                       : TextButton(
                           onPressed: () async =>
                               await _buscaPLaca(placaController.text, context),
@@ -55,7 +66,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               Expanded(
-                child: _veiculoBuild(context),
+                child: _veiculoBuild(context, size),
               )
             ],
           )),
@@ -63,49 +74,70 @@ class _HomePageState extends State<HomePage> {
   }
 
   _buscaPLaca(String placa, BuildContext context) async {
+    FocusManager.instance.primaryFocus?.unfocus();
     print('buscando placa.. $placa');
     setState(() {
       isLoading = true;
     });
-
-    const snackBar = SnackBar(content: Text('Buscando..'));
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    final veiculoScrap = context.read<IVeiculoScrap>();
-    final certBloc = context.read<CertificadoBloc>();
-    final certificadoJson = await veiculoScrap.getByPlaca(placa);
-    Certificado cert = Certificado.fromJson(certificadoJson);
-    // final cert = Certificado(
-    //     'versao',
-    //     'ipem',
-    //     'ipemEndereco',
-    //     'ipemTelefone',
-    //     'dataEmissao',
-    //     'resultado',
-    //     'tecExecutor',
-    //     'tecResponsavel',
-    //     'dataValidade',
-    //     'dataVerificacao',
-    //     'gru',
-    //     Tanque(
-    //         inmetro: 'inmetro',
-    //         placa: 'placa',
-    //         compartimentos: [Compartimento(5000, [])],
-    //         letras: [],
-    //         isCofre: false,
-    //         capacidadeTotal: 5000,
-    //         marcaTanque: 'marcaTanque',
-    //         marcaVeiculo: 'marcaVeiculo',
-    //         chassiVeiculo: 'chassiVeiculo',
-    //         dadosPneus: []));
-    certBloc.update(cert);
-    setState(() {
-      isLoading = false;
-    });
-
-    print(cert.versao);
+    try {
+      final veiculoScrap = context.read<IVeiculoScrap>();
+      final certBloc = context.read<CertificadoBloc>();
+      final certificadoJson = await veiculoScrap.getByPlaca(placa);
+      Certificado cert = Certificado.fromJson(certificadoJson);
+      // final cert = Certificado(
+      //     'versao',
+      //     'ipem',
+      //     'ipemEndereco',
+      //     'ipemTelefone',
+      //     'dataEmissao',
+      //     'resultado',
+      //     'tecExecutor',
+      //     'tecResponsavel',
+      //     'dataValidade',
+      //     'dataVerificacao',
+      //     'gru',
+      //     Tanque(
+      //         inmetro: 'inmetro',
+      //         placa: 'placa',
+      //         compartimentos: [
+      //           Compartimento(2000, []),
+      //           Compartimento(4000, []),
+      //           Compartimento(7000, []),
+      //           Compartimento(10000, []),
+      //           Compartimento(15000, []),
+      //           Compartimento(20000, []),
+      //           Compartimento(30000, []),
+      //           Compartimento(40000, []),
+      //           Compartimento(45000, [44000, 43000]),
+      //           Compartimento(50000, [49000, 47000])
+      //         ],
+      //         letras: [],
+      //         isCofre: false,
+      //         capacidadeTotal: 5000,
+      //         marcaTanque: 'marcaTanque',
+      //         marcaVeiculo: 'marcaVeiculo',
+      //         chassiVeiculo: 'chassiVeiculo',
+      //         dadosPneus: []));
+      certBloc.update(cert);
+      print(cert.versao);
+    } catch (e) {
+      final snackBar = SnackBar(
+        content: Text(
+          e.toString(),
+          style: const TextStyle(
+              color: Colors.white70, fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Colors.red.shade900,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
-  Widget _veiculoBuild(BuildContext context) {
+  Widget _veiculoBuild(BuildContext context, Size size) {
     final servicos = context.read<List<ServicoVtr>>();
     final certBloc = context.watch<CertificadoBloc>();
     if (certBloc.cert == null) return const SizedBox.shrink();
@@ -121,9 +153,10 @@ class _HomePageState extends State<HomePage> {
       codigosServico.putIfAbsent('$codigo', () => 1);
     }
     final custoTotal = custo.getCustoTotal(capacidades, setas);
-    final codigos = geraCodigosServicos(cert.tanque, custo);
+    final String codigos = geraCodigosServicos(cert.tanque, custo);
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 600),
+      padding: EdgeInsets.symmetric(
+          vertical: size.height * .02, horizontal: size.width * .1),
       child: Card(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -137,17 +170,25 @@ class _HomePageState extends State<HomePage> {
               style: const TextStyle(fontSize: 18),
             ),
             ListTile(
-              title: const Text('Verificado em:'),
-              trailing: Text(cert.dataVerificacao),
+              title: const Text('Verificado em'),
+              trailing: Text(
+                cert.dataVerificacao,
+                style: const TextStyle(fontSize: 16),
+              ),
             ),
             Text(
-              '$codigos',
-              style: const TextStyle(fontSize: 20),
+              codigos.trim(),
+              style: const TextStyle(fontSize: 16),
               maxLines: 8,
             ),
             ListTile(
-              title: const Text('Valor GRU:'),
-              trailing: Text('R\$ $custoTotal'),
+              title: const Text(
+                'Valor GRU',
+              ),
+              trailing: Text(
+                formatCurrency.format(custoTotal),
+                style: TextStyle(fontSize: 16, color: Colors.red.shade900),
+              ),
             ),
           ],
         ),
@@ -170,8 +211,8 @@ class _HomePageState extends State<HomePage> {
     }
     List<String> valores = [];
     mapCodigos.forEach((key, value) {
-      valores.add(
-          '$key x $value = R\$ ${(custo.getCustoByCodServico(key) * value).toStringAsFixed(2)}');
+      final custoFinal = (custo.getCustoByCodServico(key) * value);
+      valores.add('$key x $value = ${formatCurrency.format(custoFinal)}');
     });
     if (setas > 0) {
       valores.add(
