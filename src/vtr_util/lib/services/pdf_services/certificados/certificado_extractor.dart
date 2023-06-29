@@ -246,13 +246,10 @@ class CertificadoExtractor {
       capacidades.add(dados[0]);
       dados.removeRange(0, 4);
     }
-    if (dados.length > 4) {
-      while (dados.length > 3) {
-        for (var i = 0; i < quantidade; i++) {
-          setas[i].add(dados[0]);
-          dados.removeRange(0, 3);
-        }
-      }
+    int i = 0;
+    while (dados.isNotEmpty) {
+      setas[i++ % quantidade].add(dados[0]);
+      dados.removeRange(0, 3);
     }
     return (capacidades, setas);
   }
