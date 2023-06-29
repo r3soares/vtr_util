@@ -249,6 +249,11 @@ class CertificadoExtractor {
     int i = 0;
     while (dados.isNotEmpty) {
       setas[i++ % quantidade].add(dados[0]);
+      //Caso seja tanque de 1 compartimento e múltiplas setas (ex. MG04408)
+      //os últimos dados se misturam com o número de série
+      if (dados.length < 3) {
+        break;
+      }
       dados.removeRange(0, 3);
     }
     return (capacidades, setas);
