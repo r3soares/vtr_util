@@ -84,7 +84,8 @@ class CertificadoExtractor {
   _getVersao() => switch (certificado[3].substring(0, 6)) {
         'VT3011' => 'VT3011',
         'VT3012' => 'VT3012',
-        _ => 'VT3012',
+        'VT3021' => throw 'Certificado VT3021 não suportado',
+        _ => throw 'A versão deste certificado não é suportada',
       };
   _corrigePosicaoVersaoEmissao() {
     if (versao == 'VT3012') {
