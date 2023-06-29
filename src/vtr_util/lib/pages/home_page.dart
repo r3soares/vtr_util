@@ -25,6 +25,11 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
+      floatingActionButton: IconButton(
+        icon: const Icon(Icons.settings),
+        onPressed: () => Navigator.pushNamed(context, '/settings'),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
       body: Padding(
           padding: const EdgeInsets.all(8),
           child: Column(
@@ -39,6 +44,7 @@ class _HomePageState extends State<HomePage> {
                   controller: placaController,
                   onSubmitted: (_) async =>
                       await _buscaPLaca(placaController.text, context),
+                  style: const TextStyle(fontSize: 18),
                   decoration: InputDecoration(
                     suffixIcon: IconButton(
                         splashRadius: 5,
@@ -153,6 +159,7 @@ class _HomePageState extends State<HomePage> {
       codigosServico.putIfAbsent('$codigo', () => 1);
     }
     final custoTotal = custo.getCustoTotal(capacidades, setas);
+    final custoTotalAnterior = custo.getCustoTotalAnterior(capacidades, setas);
     final String codigos = geraCodigosServicos(cert.tanque, custo);
     return Padding(
       padding: EdgeInsets.symmetric(
@@ -178,15 +185,26 @@ class _HomePageState extends State<HomePage> {
             ),
             Text(
               codigos.trim(),
-              style: const TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 10, letterSpacing: 1),
               maxLines: 8,
             ),
             ListTile(
               title: const Text(
-                'Valor GRU',
+                'Valor Atual',
               ),
               trailing: Text(
                 formatCurrency.format(custoTotal),
+                style: TextStyle(fontSize: 16, color: Colors.red.shade900),
+              ),
+            ),
+            ListTile(
+              title: const Text(
+                'Valor Anterior',
+              ),
+              trailing: Text(
+                custoTotalAnterior == 0
+                    ? 'N/D'
+                    : formatCurrency.format(custoTotalAnterior),
                 style: TextStyle(fontSize: 16, color: Colors.red.shade900),
               ),
             ),
@@ -212,11 +230,12 @@ class _HomePageState extends State<HomePage> {
     List<String> valores = [];
     mapCodigos.forEach((key, value) {
       final custoFinal = (custo.getCustoByCodServico(key) * value);
-      valores.add('$key x $value = ${formatCurrency.format(custoFinal)}');
+      valores.add(
+          '${custo.getDescricaoCod(key)} - $key x $value = ${formatCurrency.format(custoFinal)}');
     });
     if (setas > 0) {
       valores.add(
-          '${custo.codDispReferencial} x $setas = R\$ ${custo.custoSetas(setas).toStringAsFixed(2)}');
+          '${custo.getDescricaoCod(custo.codDispReferencial)} ${custo.codDispReferencial} x $setas = R\$ ${custo.custoSetas(setas).toStringAsFixed(2)}');
     }
     return valores.fold(
         '', (previousValue, element) => '$previousValue\n$element');

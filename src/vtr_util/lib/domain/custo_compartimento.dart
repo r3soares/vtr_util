@@ -64,4 +64,7 @@ class CustoCompartimento {
       servicos.firstWhere((s) => cod == s.cod.toString()).valorAnterior;
 
   get codDispReferencial => servicoSeta.cod.toString();
+
+  getDescricaoCod(String cod) =>
+      servicos.firstWhere((s) => cod == s.cod.toString()).descricao;
 }
