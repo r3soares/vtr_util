@@ -1,0 +1,7 @@
+src/vtr_util/linux/flutter/generated_plugin_registrant.cc
+src/vtr_util/linux/flutter/generated_plugin_registrant.h
+src/vtr_util/linux/flutter/generated_plugins.cmake
+src/vtr_util/macos/Flutter/GeneratedPluginRegistrant.swift
+src/vtr_util/windows/flutter/generated_plugin_registrant.cc
+src/vtr_util/windows/flutter/generated_plugin_registrant.h
+src/vtr_util/windows/flutter/generated_plugins.cmake
