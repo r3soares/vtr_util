@@ -84,11 +84,11 @@ class CertificadoExtractor {
   _getVersao() => switch (certificado[3].substring(0, 6)) {
         'VT3011' => 'VT3011',
         'VT3012' => 'VT3012',
-        'VT3021' => throw 'Certificado VT3021 não suportado',
+        'VT3021' => 'VT3021',
         _ => throw 'A versão deste certificado não é suportada',
       };
   _corrigePosicaoVersaoEmissao() {
-    if (versao == 'VT3012') {
+    if (versao == 'VT3012' || versao == 'VT3021') {
       certificado.insert(3, versao);
       certificado[4] = certificado[4].replaceFirst(versao, '');
     }
@@ -101,9 +101,13 @@ class CertificadoExtractor {
 
   _getTecnicoExecutor() {
     if (versao == 'VT3012') {
-      var executor = certificado[6].replaceFirst('Técnico Executor-', '');
-      executor = executor.substring(0, executor.indexOf('Técnico'));
+      int posicao = certificado[6].indexOf('Técnico Responsável-');
+      var executor = certificado[6].substring(0, posicao);
+      executor = executor.replaceFirst('Técnico Executor-', '');
       return executor;
+    }
+    if (versao == 'VT3021') {
+      return certificado[5].replaceFirst('Técnico Executor-', '');
     }
     return '';
   }
@@ -113,6 +117,9 @@ class CertificadoExtractor {
       var resp = certificado[6].replaceFirst('Técnico Responsável-', '|');
       resp = resp.split('|')[1];
       return resp;
+    }
+    if (versao == 'VT3021') {
+      return certificado[6].replaceFirst('Técnico Responsável-', '');
     }
     return '';
   }
@@ -125,6 +132,8 @@ class CertificadoExtractor {
         return certificado[posicao + 1];
       case 'VT3011':
         return certificado[posicao].replaceFirst('VÁLIDO ATÉ', '');
+      case 'VT3021':
+        return 'Indeterminado';
     }
   }
 
@@ -136,22 +145,37 @@ class CertificadoExtractor {
         return certificado[posicao + 1];
       case 'VT3011':
         return certificado[posicao].replaceFirst('DATA VERIFICAÇÃO:', '');
+      case 'VT3021':
+        {
+          final int posMedicao =
+              certificado.indexWhere((e) => e.startsWith('DATA DA MEDIÇÃO'));
+          return certificado[posMedicao + 1];
+        }
     }
   }
 
   _getGRU() => switch (versao) {
         'VT3012' => '',
+        'VT3021' => '',
         'VT3011' =>
           certificado.firstWhere((e) => e.startsWith('GRU:')).split(' ')[1],
         _ => ''
       };
   _getInmetroCompartimentos() {
+    if (versao == 'VT3021') {
+      final index = certificado
+          .indexWhere((e) => e.startsWith('Um tanque de carga marca '));
+      final dados = certificado[index].split(' ');
+      final inmetro = dados[8];
+      final compartimentos = int.parse(dados[14]);
+      return (inmetro, compartimentos);
+    }
     final dado = certificado
         .firstWhere((e) => e.startsWith('Nº do INMETRO:Nº de Compartimentos:'));
     final temp = dado.split(':')[3].split(' ');
     final inmetro = temp[0];
-    final capacidade = temp[1].substring(1, temp[1].length - 1);
-    switch (capacidade) {
+    final compartimentos = temp[1].substring(1, temp[1].length - 1);
+    switch (compartimentos) {
       case 'um':
         return (inmetro, 1);
       case 'dois':
@@ -175,13 +199,36 @@ class CertificadoExtractor {
     }
   }
 
+  List<int> _getCapacidadesVT3021() {
+    final index = certificado.indexWhere((e) => e == 'DIMENSÕES');
+    var capacidades = certificado[index + 1];
+    List<int> listaCapacidades = [];
+    String cap = '';
+    while (capacidades.isNotEmpty) {
+      cap += capacidades[0];
+      capacidades = capacidades.substring(1);
+      if (cap.length > 3 && (capacidades.isEmpty || capacidades[0] != '0')) {
+        listaCapacidades.add(int.parse(cap));
+        cap = '';
+      }
+    }
+    return listaCapacidades;
+  }
+
   _getCapTotalTanque() {
+    if (versao == 'VT3021') {
+      final capTotal = _getCapacidadesVT3021()
+          .reduce((value, element) => value += element)
+          .toString();
+      return capTotal;
+    }
     final posicao = certificado
         .indexWhere((e) => e.startsWith('Nº do INMETRO:Nº de Compartimentos:'));
     return certificado[posicao + 2].trim().replaceFirst('.', '');
   }
 
   _getLetrasTanque() {
+    if (versao == 'VT3021') return ['', '', '', '', '', '', '', ''];
     final int posInicial =
         certificado.indexWhere((e) => e.startsWith('Ref.Ref.mmmm')) + 1;
     final int posFinal =
@@ -199,12 +246,25 @@ class CertificadoExtractor {
   }
 
   _getIsCofre() {
+    if (versao == 'VT3021') return false;
     final int posicao =
         certificado.indexWhere((e) => e.startsWith('Sem Cofre'));
     return !certificado[posicao].contains('X');
   }
 
   _getDadosPneusPlacaChassi() {
+    if (versao == 'VT3021') {
+      List<String> dadosPneu = [];
+
+      final indexPlaca = certificado.indexWhere((e) => e == 'PLACA') + 1;
+      final placa = certificado[indexPlaca];
+
+      final indexChassi = certificado.indexWhere((e) => e == 'UF') + 1;
+      final chassi = certificado[indexChassi]
+          .substring(2); //Os dois primeiros dígitos são do Estado
+
+      return (dadosPneu, placa, chassi);
+    }
     int posicao = certificado.indexWhere((e) => e.startsWith('DIMENSÕES')) + 1;
     List<String> dadosPneus = [];
     for (int i = posicao; i < posicao + 10; i++) {
@@ -225,6 +285,16 @@ class CertificadoExtractor {
   }
 
   _getMarcaVeiculoMarcaTanque() {
+    if (versao == 'VT3021') {
+      final indexTanque = certificado
+          .indexWhere((e) => e.startsWith('Um tanque de carga marca '));
+      final dados = certificado[indexTanque].split(' ');
+      final marcaTanque = dados[5];
+      final indexVeiculo = certificado.indexWhere((e) => e == 'PLACA') - 1;
+      final marcaVeiculo = certificado[indexVeiculo];
+
+      return (marcaVeiculo, marcaTanque);
+    }
     int posicao = certificado.indexOf('POSIÇÃO DISP.REF. (mm)');
     final marcaVeiculo = certificado[posicao + 1];
     final marcaTanque = certificado[posicao + 2];
@@ -232,6 +302,11 @@ class CertificadoExtractor {
   }
 
   _getDadosCompartimentos(int quantidade) {
+    if (versao == 'VT3021') {
+      List<List<int>> setas = List.generate(quantidade, (index) => []);
+      return (_getCapacidadesVT3021(), setas);
+    }
+
     int posicao = certificado.indexOf('POSIÇÃO DISP.REF. (mm)') + 3;
     final List<int> dados = [];
     for (int i = posicao; i < certificado.length; i++) {
