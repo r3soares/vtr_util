@@ -143,13 +143,22 @@ class VeiculoScrap extends BaseScrap implements IVeiculoScrap {
 
   String _getNumeroCertificado(Bs4Element tabela) {
     int certificado = 0;
+    DateTime verificacaoMaisAtual =
+        DateTime.now().subtract(const Duration(days: 10000));
     for (final item in tabela.children) {
-      //Há varios dados aqui (Local - Certificado - Data - Validade - Resultado - Link)
+      //Há varios dados aqui (Local - Certificado - Data Verificacao - Validade - Resultado - Link)
       //item.children[1] é o campo do Certificado
-      final cert = item.children[1].text;
-      final numero = int.tryParse(cert) ?? 0;
-      if (certificado < numero) {
-        certificado = numero;
+
+      //Pega numero do certificado
+
+      //Pega data da verificação
+      final verificacao = item.children[2].text;
+      final data = formato.parse(verificacao);
+      //Compara datas
+      if (verificacaoMaisAtual.isBefore(data)) {
+        verificacaoMaisAtual = data;
+        final cert = item.children[1].text;
+        certificado = int.tryParse(cert) ?? 0;
       }
     }
     return certificado.toString();
