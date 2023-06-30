@@ -45,8 +45,7 @@ class Database {
         ServicoVtr(365, 20000, 743.11, 0, 6.64, 'De 10.001L até 20.000L'),
         ServicoVtr(366, 40000, 1148.07, 0, 10.27, 'De 20.001L até 40.000L'),
         ServicoVtr(367, 100000, 2268.31, 0, 20.3, 'Acima de 40.000L'),
-        ServicoVtr(
-            368, 0, 180.90, 0, 1.62, 'Dispositivo de referência adicional'),
+        ServicoVtr(368, 0, 180.90, 0, 1.62, 'Disp. de ref. adicional'),
       ]);
       var encoder = const JsonEncoder();
       for (var s in servicos) {
