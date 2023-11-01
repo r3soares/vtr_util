@@ -15,6 +15,9 @@ class VeiculoScrap extends BaseScrap implements IVeiculoScrap {
     final dados = {
       'Placa': placa,
       'SelectedTipoClassificacaoInstrumento': '315',
+      'CaptchaResult':
+          '03AFcWeA6K9P2WnSgoE-9mjklQNZcniaZSS9mgEcw9JKHkNeZ_zrodEZKshAQ9HmIkMK21NUM4Uinqev-I7JDszP0yu0KXRh7_Ni1ipdJRL1SqsglGbQcgD_uYCc_ntqiZ9Hka-z6S0E9qA6XwaIMks7cPWEa9XSj6ES45Vcm5ExctDBwDLfKRxLLehfimsufzTGg53UtJn99v0fNlcwPY5llwphbU1N9YPR1bDo2910LQUvYPlqZX-1rgLzd-zgHAK4jEk9-4gL13IR-OFVGuVJdIRbSMBHn3lm1HxI1DiWFKQ6kDvA1CMyhp2wZt8TAto9ZKAPPVvA7823AEfHiFmgdRwHYQDIy7hr1KO1KDwYv7OIUkKLOfWbQUzf2d5p5v93i4KtyfKpnBsgNO9AqGkfDO7MN1lEpkJTLfkl7BlppcFgUtG24-9Ut9ctDL-uVWn-heSNUxOHLaRwmN7cVkodO88NQu3SedzpgmToiaNVSoMolH78lB_o67LFmp8xdOQK2JbAJS7kii2zqTsSoyqT_WYzgKrTQADS29akNduOMdaG4EJX1klPWUJwci8eJ5loKoxf3Gs_FDWmexRzYcwLTmms5s8HuFcXt_YDB0rBkOU5kChLH0ccA',
+      //'ActualPage': '1',
     };
     try {
       final htmlHistoricoVeiculo = await loadPage(URL_INSTRUMENTROS, dados);
