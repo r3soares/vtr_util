@@ -169,33 +169,38 @@ class CertificadoExtractor {
       final inmetro = dados[8];
       final compartimentos = int.parse(dados[14]);
       return (inmetro, compartimentos);
-    }
-    final dado = certificado
-        .firstWhere((e) => e.startsWith('Nº do INMETRO:Nº de Compartimentos:'));
-    final temp = dado.split(':')[3].split(' ');
-    final inmetro = temp[0];
-    final compartimentos = temp[1].substring(1, temp[1].length - 1);
-    switch (compartimentos) {
-      case 'um':
-        return (inmetro, 1);
-      case 'dois':
-        return (inmetro, 2);
-      case 'três':
-        return (inmetro, 3);
-      case 'quatro':
-        return (inmetro, 4);
-      case 'cinco':
-        return (inmetro, 5);
-      case 'seis':
-        return (inmetro, 6);
-      case 'sete':
-        return (inmetro, 7);
-      case 'oito':
-        return (inmetro, 8);
-      case 'nove':
-        return (inmetro, 9);
-      case 'dez':
-        return (inmetro, 10);
+    } else //Outras versões de certificados
+    {
+      final dado = certificado.firstWhere(
+          (e) => e.startsWith('Nº do INMETRO:Nº de Compartimentos:'));
+      final temp = dado.split(':')[3].split(' ');
+      final inmetro = temp[0].substring(0, temp[0].length - 1);
+
+      //A quantidade de compartimentos está colada com o número do Inmetro
+      final compartimentos = temp[1].substring(1, temp[1].length - 1);
+      switch (compartimentos) {
+        case 'um':
+          return (inmetro, 1);
+        case 'dois':
+          return (inmetro, 2);
+        case 'três':
+          return (inmetro, 3);
+        case 'quatro':
+          return (inmetro, 4);
+        case 'cinco':
+          return (inmetro, 5);
+        case 'seis':
+          return (inmetro, 6);
+        case 'sete':
+          return (inmetro, 7);
+        case 'oito':
+          return (inmetro, 8);
+        case 'nove':
+          return (inmetro, 9);
+        case 'dez':
+          //Remover mais um dígito do número do Inmetro
+          return (inmetro.substring(0, inmetro.length - 1), 10);
+      }
     }
   }
 
