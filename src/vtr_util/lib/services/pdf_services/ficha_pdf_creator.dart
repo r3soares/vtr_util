@@ -79,21 +79,21 @@ class FichaPdfCreator extends BasePdfCreator {
     var linha = grid.rows.add();
     linha.cells[0].value = 'PLACA: ${cert.tanque.placa}';
     linha.cells[0].columnSpan = 4;
-    linha.cells[4].value = 'MARCA: ${cert.tanque.marcaVeiculo}';
+    linha.cells[4].value = 'MARCA: ${cert.marca}';
     linha.cells[4].columnSpan = 4;
     linha.cells[8].value = 'MODELO:';
     linha.cells[8].columnSpan = 3;
 
     linha = grid.rows.add();
-    linha.cells[0].value = 'N° DO CHASSI: ${cert.tanque.chassiVeiculo}';
+    linha.cells[0].value = 'N° DO CHASSI: ${cert.chassi}';
     linha.cells[0].columnSpan = 6;
-    linha.cells[6].value = 'ANO:';
+    linha.cells[6].value = 'ANO: ${cert.ano}';
     linha.cells[6].columnSpan = 5;
 
     linha = grid.rows.add();
-    linha.cells[0].value = 'PROPRIETÁRIO:';
+    linha.cells[0].value = 'PROPRIETÁRIO: ${cert.proprietario}';
     linha.cells[0].columnSpan = 6;
-    linha.cells[6].value = 'CPF/CNPJ:';
+    linha.cells[6].value = 'CPF/CNPJ: ${cert.cnpj}';
     linha.cells[6].columnSpan = 5;
 
     linha = grid.rows.add();
@@ -103,9 +103,9 @@ class FichaPdfCreator extends BasePdfCreator {
     linha.cells[6].columnSpan = 5;
 
     linha = grid.rows.add();
-    linha.cells[0].value = 'CIDADE:';
+    linha.cells[0].value = 'CIDADE: ${cert.municipio}';
     linha.cells[0].columnSpan = 4;
-    linha.cells[4].value = 'ESTADO:';
+    linha.cells[4].value = 'ESTADO: ${cert.uf}';
     linha.cells[4].columnSpan = 4;
     linha.cells[8].value = 'CEP:';
     linha.cells[8].columnSpan = 3;
@@ -119,7 +119,7 @@ class FichaPdfCreator extends BasePdfCreator {
     linha = grid.rows.add();
     linha.cells[0].value = 'MARCA: ${cert.tanque.marcaTanque}';
     linha.cells[0].columnSpan = 4;
-    linha.cells[4].value = 'N° DE SÉRIE:';
+    linha.cells[4].value = 'N° DE SÉRIE: ${cert.numSerie}';
     linha.cells[4].columnSpan = 4;
     linha.cells[8].value = 'ANO:';
     linha.cells[8].columnSpan = 3;

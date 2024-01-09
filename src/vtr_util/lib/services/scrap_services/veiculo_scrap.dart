@@ -34,6 +34,9 @@ class VeiculoScrap extends BaseScrap implements IVeiculoScrap {
       };
       final pdf = await loadPage(URL_CERTIFICADO, dadosConsulta);
       final dadosFinaisEmJson = await _getPDFCertificado(pdf);
+      dadosFinaisEmJson.addAll(dadosVeiculo);
+      // dadosFinaisEmJson['proprietario'] = dadosVeiculo['proprietario'] ?? '';
+      // dadosFinaisEmJson['cnpj'] = dadosVeiculo['cnpj'] ?? '';
       return dadosFinaisEmJson;
     } catch (e) {
       rethrow;
@@ -78,10 +81,10 @@ class VeiculoScrap extends BaseScrap implements IVeiculoScrap {
     }
   }
 
-  Map _getDadosVeiculo(String html) {
+  Map<String, dynamic> _getDadosVeiculo(String html) {
     final bs = BeautifulSoup(html);
     final campos = bs.findAll('*', class_: 'form-control');
-    final veiculo = {};
+    final Map<String, dynamic> veiculo = {};
 
     for (final Bs4Element dado in campos) {
       switch (dado.attributes['id']) {
