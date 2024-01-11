@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:test/test.dart';
 import 'package:vtr_util/models/certificado.dart';
 import 'package:vtr_util/models/compartimento.dart';

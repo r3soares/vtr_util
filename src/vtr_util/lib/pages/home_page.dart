@@ -125,7 +125,6 @@ class _HomePageState extends State<HomePage> {
       //         chassiVeiculo: 'chassiVeiculo',
       //         dadosPneus: []));
       certBloc.update(cert);
-      print(cert.versao);
     } catch (e) {
       final snackBar = SnackBar(
         content: Text(
@@ -147,6 +146,7 @@ class _HomePageState extends State<HomePage> {
     final servicos = context.read<List<ServicoVtr>>();
     final certBloc = context.watch<CertificadoBloc>();
     if (certBloc.cert == null) return const SizedBox.shrink();
+    //Exibe dados do Certificado
     final cert = certBloc.cert!;
     List<int> capacidades = [];
     final Map<String, int> codigosServico = {};

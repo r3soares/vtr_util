@@ -7,7 +7,6 @@ import 'package:vtr_util/services/pdf_services/base_pdf_creator.dart';
 class FichaPdfCreator extends BasePdfCreator {
   final List<String> campos = [
     'Espaço Vazio',
-    'Espaço Cheio',
     'Espaço Total',
     'Coef. +2%',
     'Coef. Seta',
@@ -16,8 +15,6 @@ class FichaPdfCreator extends BasePdfCreator {
     'Vol. Tub.',
     'Cap. Comp.',
     'Med. Comp.',
-    'Med. H.A',
-    'Med. H.B',
     'Esp. Pneus',
     'Pressão Pneu',
   ];
@@ -155,20 +152,24 @@ class FichaPdfCreator extends BasePdfCreator {
     }
 
     linha = grid.rows.add();
-    final styleObs =
-        PdfGridCellStyle(cellPadding: PdfPaddings(top: 6, bottom: 6));
+
     final stringFormat =
         PdfStringFormat(lineAlignment: PdfVerticalAlignment.bottom);
+    final styleObs = PdfGridCellStyle(
+        cellPadding: PdfPaddings(top: 16, bottom: 16), format: stringFormat);
     linha.cells[0].style = styleObs;
-    linha.cells[0].stringFormat = stringFormat;
+
     linha.cells[0].value = 'Obs:';
     linha.cells[0].columnSpan = 9;
-    linha.cells[9].style = styleObs;
-    linha.cells[9].stringFormat = stringFormat;
+    linha.cells[0].style = styleObs;
     linha.cells[9].value = 'Data ____/____/20____';
     linha.cells[9].columnSpan = 2;
+    linha.cells[9].style = styleObs;
 
-    grid.draw(page: doc.pages.add(), bounds: const Rect.fromLTWH(0, 0, 0, 0));
+    grid.draw(
+      page: doc.pages.add(),
+      bounds: const Rect.fromLTWH(0, 0, 0, 0),
+    );
 
     await savePdf(doc);
   }
