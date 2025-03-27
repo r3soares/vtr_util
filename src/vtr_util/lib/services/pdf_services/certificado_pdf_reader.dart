@@ -17,7 +17,7 @@ class CertificadoPdfReader extends BasePdfReader {
     final List<String> docFinal = [];
     for (var e in linhas) {
       if (_isLixo(e.text)) continue;
-      docFinal.add(e.text);
+      docFinal.add(e.text.trim());
       //teste += '${e.text}\n';
     }
     final certificado = _extraiCertificado(docFinal);
@@ -96,7 +96,7 @@ class CertificadoPdfReader extends BasePdfReader {
     if (texto == 'TUBULAÇÃO DE DESCARGA') return true;
     if (texto == 'VOLUME DA TUBULAÇÃO (litros)') return true;
     if (texto == 'Endereço: ') return true;
-    if (texto == 'Pág.:1') return true;
+    if (texto == 'Pág.: 1') return true;
     if (texto == '/') return true;
     if (texto == '1') return true;
     if (texto == 'Endereço:') return true;

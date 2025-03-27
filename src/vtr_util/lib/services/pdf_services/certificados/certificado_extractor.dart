@@ -25,7 +25,7 @@ class CertificadoExtractor {
     dataEmissao = _getDataEmissao();
     resultado = _getResultado();
     tecExecutor = _getTecnicoExecutor();
-    tecResponsavel = _getTecnicoResponsavel();
+    tecResponsavel = tecExecutor == '?' ? '?' : _getTecnicoResponsavel();
     dataValidade = _getValidade();
     dataVerificacao = _getVerificacao();
     gru = _getGRU();
@@ -40,30 +40,30 @@ class CertificadoExtractor {
     final (List<int> capacidades, List<List<int>> setas) =
         _getDadosCompartimentos(compartimentos);
     tanque = Tanque(
-        inmetro: inmetro,
-        placa: placa,
+        inmetro: inmetro.trim(),
+        placa: placa.trim(),
         compartimentos: _criaCompartimentos(capacidades, setas),
         letras: letras,
         isCofre: isCofre,
-        capacidadeTotal: int.parse(capTotalTanque),
-        marcaTanque: marcaTanque,
-        marcaVeiculo: marcaVeiculo,
-        chassiVeiculo: chassi,
+        capacidadeTotal: capTotalTanque,
+        marcaTanque: marcaTanque.trim(),
+        marcaVeiculo: marcaVeiculo.trim(),
+        chassiVeiculo: chassi.trim(),
         dadosPneus: dadosPneus);
   }
 
   Map<String, dynamic> toJson() => {
-        'versao': versao,
-        'ipem': ipem,
-        'ipemEndereco': ipemEndereco,
-        'ipemTelefone': ipemTelefone,
-        'dataEmissao': dataEmissao,
-        'resultado': resultado,
-        'tecExecutor': tecExecutor,
-        'tecResponsavel': tecResponsavel,
-        'dataValidade': dataValidade,
-        'dataVerificacao': dataVerificacao,
-        'gru': gru,
+        'versao': versao.trim(),
+        'ipem': ipem.trim(),
+        'ipemEndereco': ipemEndereco.trim(),
+        'ipemTelefone': ipemTelefone.trim(),
+        'dataEmissao': dataEmissao.trim(),
+        'resultado': resultado.trim(),
+        'tecExecutor': tecExecutor.trim(),
+        'tecResponsavel': tecResponsavel.trim(),
+        'dataValidade': dataValidade.trim(),
+        'dataVerificacao': dataVerificacao.trim(),
+        'gru': gru.trim(),
         'tanque': tanque.toJson(),
       };
 
@@ -94,7 +94,7 @@ class CertificadoExtractor {
     }
   }
 
-  _getDataEmissao() => certificado[4].replaceFirst('Data de Emissão: ', '');
+  _getDataEmissao() => certificado[4].replaceFirst('Data de Emissão: ', '').trim();
 
   _getResultado() =>
       certificado[5].contains('APROVADO') ? 'APROVADO' : 'REPROVADO';
@@ -102,6 +102,7 @@ class CertificadoExtractor {
   _getTecnicoExecutor() {
     if (versao == 'VT3012') {
       int posicao = certificado[6].indexOf('Técnico Responsável-');
+      if(posicao == -1) return '?';
       var executor = certificado[6].substring(0, posicao);
       executor = executor.replaceFirst('Técnico Executor-', '');
       return executor;
@@ -128,10 +129,16 @@ class CertificadoExtractor {
     final int posicao =
         certificado.indexWhere((e) => e.startsWith('VÁLIDO ATÉ'));
     switch (versao) {
-      case 'VT3012':
+      case 'VT3012':{
+        if(posicao == -1) return '?';
         return certificado[posicao + 1];
-      case 'VT3011':
+      }
+        
+      case 'VT3011':{
+        if(posicao == -1) return '?';
         return certificado[posicao].replaceFirst('VÁLIDO ATÉ', '');
+      }
+        
       case 'VT3021':
         return 'Indeterminado';
     }
@@ -141,10 +148,14 @@ class CertificadoExtractor {
     final int posicao =
         certificado.indexWhere((e) => e.startsWith('DATA VERIFICAÇÃO'));
     switch (versao) {
-      case 'VT3012':
+      case 'VT3012':{
+        if(posicao == -1) return '?';
         return certificado[posicao + 1];
-      case 'VT3011':
+      }        
+      case 'VT3011':{
+        if(posicao == -1) return '?';
         return certificado[posicao].replaceFirst('DATA VERIFICAÇÃO:', '');
+      }        
       case 'VT3021':
         {
           final int posMedicao =
@@ -172,50 +183,56 @@ class CertificadoExtractor {
     } else //Outras versões de certificados
     {
       final dado = certificado.firstWhere(
-          (e) => e.startsWith('Nº do INMETRO:Nº de Compartimentos:'));
-      final temp = dado.split(':')[3].split(' ');
-      final inmetro = temp[0].substring(0, temp[0].length - 1);
+          (e) => e.startsWith('Nº do INMETRO: Nº de Compartimentos:'));
+      final temp = dado.split(':')[3].trim().split(' ');
+      final inmetro = temp[0];
 
       //A quantidade de compartimentos está colada com o número do Inmetro
-      final compartimentos = temp[1].substring(1, temp[1].length - 1);
-      switch (compartimentos) {
-        case 'um':
-          return (inmetro, 1);
-        case 'dois':
-          return (inmetro, 2);
-        case 'três':
-          return (inmetro, 3);
-        case 'quatro':
-          return (inmetro, 4);
-        case 'cinco':
-          return (inmetro, 5);
-        case 'seis':
-          return (inmetro, 6);
-        case 'sete':
-          return (inmetro, 7);
-        case 'oito':
-          return (inmetro, 8);
-        case 'nove':
-          return (inmetro, 9);
-        case 'dez':
-          //Remover mais um dígito do número do Inmetro
-          return (inmetro.substring(0, inmetro.length - 1), 10);
-      }
+      final compartimentos = int.tryParse(temp[1]) ;
+      return (inmetro, compartimentos);
+      // switch (compartimentos) {
+      //   case 'um':
+      //     return (inmetro, 1);
+      //   case 'dois':
+      //     return (inmetro, 2);
+      //   case 'três':
+      //     return (inmetro, 3);
+      //   case 'quatro':
+      //     return (inmetro, 4);
+      //   case 'cinco':
+      //     return (inmetro, 5);
+      //   case 'seis':
+      //     return (inmetro, 6);
+      //   case 'sete':
+      //     return (inmetro, 7);
+      //   case 'oito':
+      //     return (inmetro, 8);
+      //   case 'nove':
+      //     return (inmetro, 9);
+      //   case 'dez':
+      //     //Remover mais um dígito do número do Inmetro
+      //     return (inmetro.substring(0, inmetro.length - 1), 10);
+      // }
     }
   }
 
   List<int> _getCapacidadesVT3021() {
-    final index = certificado.indexWhere((e) => e == 'DIMENSÕES');
-    var capacidades = certificado[index + 1];
+    // final index = certificado.indexWhere((e) => e == 'DIMENSÕES');
+    // var capacidades = certificado[index + 1];
+    // List<int> listaCapacidades = [];
+    // String cap = '';
+    // while (capacidades.isNotEmpty) {
+    //   cap += capacidades[0];
+    //   capacidades = capacidades.substring(1);
+    //   if (cap.length > 3 && (capacidades.isEmpty || capacidades[0] != '0')) {
+    //     listaCapacidades.add(int.parse(cap));
+    //     cap = '';
+    //   }
+    // }
+    final capacidades = certificado[23].trim().split(' ');
     List<int> listaCapacidades = [];
-    String cap = '';
-    while (capacidades.isNotEmpty) {
-      cap += capacidades[0];
-      capacidades = capacidades.substring(1);
-      if (cap.length > 3 && (capacidades.isEmpty || capacidades[0] != '0')) {
-        listaCapacidades.add(int.parse(cap));
-        cap = '';
-      }
+    for (var c in capacidades) {
+      listaCapacidades.add(int.parse(c));
     }
     return listaCapacidades;
   }
@@ -225,17 +242,15 @@ class CertificadoExtractor {
       final capTotal = _getCapacidadesVT3021()
           .reduce((value, element) => value += element)
           .toString();
-      return capTotal;
+      return int.tryParse(capTotal.replaceAll('.', ''));
     }
-    final posicao = certificado
-        .indexWhere((e) => e.startsWith('Nº do INMETRO:Nº de Compartimentos:'));
-    return certificado[posicao + 2].trim().replaceFirst('.', '');
+    return int.tryParse(certificado[15].replaceAll('.', ''));
   }
 
   _getLetrasTanque() {
     if (versao == 'VT3021') return ['', '', '', '', '', '', '', ''];
     final int posInicial =
-        certificado.indexWhere((e) => e.startsWith('Ref.Ref.mmmm')) + 1;
+        certificado.indexWhere((e) => e.startsWith('Ref. Ref. mm mm')) + 1;
     final int posFinal =
         certificado.indexWhere((e) => e.startsWith('Sem Cofre'));
     List<String> letras = []; //a,b,c,d,e,f,g,h
@@ -266,24 +281,20 @@ class CertificadoExtractor {
 
       final indexChassi = certificado.indexWhere((e) => e == 'UF') + 1;
       final chassi = certificado[indexChassi]
-          .substring(2); //Os dois primeiros dígitos são do Estado
+          .substring(2).trim(); //Os dois primeiros dígitos são do Estado
 
       return (dadosPneu, placa, chassi);
     }
     int posicao = certificado.indexWhere((e) => e.startsWith('DIMENSÕES')) + 1;
     List<String> dadosPneus = [];
     for (int i = posicao; i < posicao + 10; i++) {
-      if (certificado[i][0] == ' ') {
+      if (certificado[i].contains(RegExp(r'[./,]'))) {
         dadosPneus.add(certificado[i].trim());
       } else {
         break;
       }
     }
-    posicao += dadosPneus.length;
     final posFinal = posicao + dadosPneus.length;
-    for (var i = posicao; i < posFinal; i++) {
-      dadosPneus.add(certificado[i]);
-    }
     final placa = certificado[posFinal];
     final chassi = certificado[posFinal + 1];
     return (dadosPneus, placa, chassi);

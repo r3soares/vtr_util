@@ -28,7 +28,8 @@ class VeiculoScrap extends BaseScrap implements IVeiculoScrap {
       final dadosVeiculo = _getDadosVeiculo(htmlDetalhesCertificado);
 
       final dadosConsulta = {
-        'id': dadosVeiculo['ultimoCertificado'],
+        'id': dadosCertificado['id'],
+        'validacao': '',
         'tipoInstrumento': 'VeiculoTanque',
         'uf': dadosVeiculo['uf'],
       };
@@ -147,7 +148,7 @@ class VeiculoScrap extends BaseScrap implements IVeiculoScrap {
     return veiculo;
   }
 
-  String _getNumeroCertificado(Bs4Element tabela) {
+ String _getNumeroCertificado(Bs4Element tabela) {
     int certificado = 0;
     DateTime verificacaoMaisAtual =
         DateTime.now().subtract(const Duration(days: 10000));
@@ -168,6 +169,18 @@ class VeiculoScrap extends BaseScrap implements IVeiculoScrap {
       }
     }
     return certificado.toString();
+  }
+
+  //Não utilizar, por enquanto (item vem da posicao 5 do array (item.children[5].text))
+  String _getIdConsulta(Bs4Element item){
+    final onclick = item.a!['onclick']; //"onDetailCertificadoClick('162825',null,'VeiculoTanque','SC')"
+          final verificacao = onclick!
+              .substring(25, onclick.length - 1)
+              .replaceAll(' ', '');
+    var ultimaVerificacao = verificacao.replaceAll('\'', '');
+      final dadosIdentificacao = ultimaVerificacao.split(',');
+      return dadosIdentificacao[0];
+
   }
 
   Future<Map<String, dynamic>> _getPDFCertificado(String pdf) async {
