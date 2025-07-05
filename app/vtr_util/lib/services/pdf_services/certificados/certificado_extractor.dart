@@ -244,6 +244,9 @@ class CertificadoExtractor {
           .toString();
       return int.tryParse(capTotal.replaceAll('.', ''));
     }
+    else if (versao == 'VT3012'){
+      return int.tryParse(certificado[14].replaceAll('.', ''));
+    }
     return int.tryParse(certificado[15].replaceAll('.', ''));
   }
 
