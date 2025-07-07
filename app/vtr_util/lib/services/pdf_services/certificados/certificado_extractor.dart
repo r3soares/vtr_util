@@ -90,11 +90,11 @@ class CertificadoExtractor {
   _corrigePosicaoVersaoEmissao() {
     if (versao == 'VT3012' || versao == 'VT3021') {
       certificado.insert(3, versao);
-      certificado[4] = certificado[4].replaceFirst(versao, '');
+      certificado[4] = certificado[4].replaceFirst(versao, '').trim();
     }
   }
 
-  _getDataEmissao() => certificado[4].replaceFirst('Data de Emissão: ', '').trim();
+  _getDataEmissao() => certificado[4].replaceFirst('Data de Emissão: ', '');
 
   _getResultado() =>
       certificado[5].contains('APROVADO') ? 'APROVADO' : 'REPROVADO';
@@ -244,10 +244,7 @@ class CertificadoExtractor {
           .toString();
       return int.tryParse(capTotal.replaceAll('.', ''));
     }
-    else if (versao == 'VT3012'){
-      return int.tryParse(certificado[14].replaceAll('.', ''));
-    }
-    return int.tryParse(certificado[15].replaceAll('.', ''));
+    return int.tryParse(certificado[13].replaceAll('.', ''));
   }
 
   _getLetrasTanque() {

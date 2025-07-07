@@ -107,8 +107,12 @@ class CertificadoPdfReader extends BasePdfReader {
     if (texto == 'REFERÊNCIA DAS DIMENSÕESDIMENSÕES DO TANQUECOFRE') {
       return true;
     }
+    if (texto == 'REFERÊNCIA DAS DIMENSÕES DIMENSÕES DO TANQUE COFRE') {
+      return true;
+    }
     if (texto == 'IDENTIFICAÇÃO DO VEÍCULODIMENSÕES DOS PNEUS') return true;
     if (texto == 'Marca:Ano de Fabricação:Nº de Série:') return true;
+    if (texto == 'Marca: Ano de Fabricação: Nº de Série:') return true;
     if (texto == 'Licença:UF:') return true;
     if (texto == 'Nº do CHASSI:') return true;
     if (texto == 'PNEUSPRESSÃO (kPa)') return true;
@@ -145,6 +149,8 @@ class CertificadoPdfReader extends BasePdfReader {
     if (texto == '4º EIXO') return true;
     if (texto == 'DOC') return true;
     if (texto == 'DOCNº. CERTIFICADO') return true;
+    //Não estou tratando ainda
+    if (texto.startsWith('Bairro')) return true;
     return false;
   }
 
