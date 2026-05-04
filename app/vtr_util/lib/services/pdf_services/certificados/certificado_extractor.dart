@@ -21,7 +21,6 @@ class CertificadoExtractor {
     ipemEndereco = _getIpemEndereco();
     ipemTelefone = _getIpemTelefone();
     versao = _getVersao();
-    _corrigePosicaoVersaoEmissao();
     dataEmissao = _getDataEmissao();
     resultado = _getResultado();
     tecExecutor = _getTecnicoExecutor();
@@ -79,48 +78,69 @@ class CertificadoExtractor {
 
   _getIpemEndereco() => certificado[1];
 
-  _getIpemTelefone() => certificado[2].replaceFirst('Telefone/Fax:', '');
+  _getIpemTelefone() => certificado
+      .firstWhere((e) => e.startsWith('Telefone/Fax:'), orElse: () => '')
+      .replaceFirst('Telefone/Fax:', '');
 
-  _getVersao() => switch (certificado[3].substring(0, 6)) {
-        'VT3011' => 'VT3011',
-        'VT3012' => 'VT3012',
-        'VT3021' => 'VT3021',
-        _ => throw 'A versão deste certificado não é suportada',
-      };
-  _corrigePosicaoVersaoEmissao() {
-    if (versao == 'VT3012' || versao == 'VT3021') {
-      certificado.insert(3, versao);
-      certificado[4] = certificado[4].replaceFirst(versao, '').trim();
+  _getVersao() {
+    final pattern = RegExp(r'VT\d{4}');
+    for (var linha in certificado) {
+      final match = pattern.firstMatch(linha);
+      if (match != null) {
+        return switch (match.group(0)!) {
+          'VT3011' => 'VT3011',
+          'VT3012' => 'VT3012',
+          'VT3021' => 'VT3021',
+          _ => throw 'A versão deste certificado não é suportada',
+        };
+      }
     }
+    throw 'A versão deste certificado não é suportada';
+  }
+  _getDataEmissao() {
+    final linha = certificado.firstWhere(
+        (e) => e.contains('Data de Emissão: '), orElse: () => '');
+    final match =
+        RegExp(r'Data de Emissão: (\d{2}/\d{2}/\d{4})').firstMatch(linha);
+    return match?.group(1) ?? '?';
   }
 
-  _getDataEmissao() => certificado[4].replaceFirst('Data de Emissão: ', '');
-
-  _getResultado() =>
-      certificado[5].contains('APROVADO') ? 'APROVADO' : 'REPROVADO';
+  _getResultado() {
+    final linha = certificado.firstWhere(
+        (e) => e.contains('APROVADO') || e.contains('REPROVADO'),
+        orElse: () => '');
+    return linha.contains('APROVADO') ? 'APROVADO' : 'REPROVADO';
+  }
 
   _getTecnicoExecutor() {
     if (versao == 'VT3012') {
-      int posicao = certificado[6].indexOf('Técnico Responsável-');
-      if(posicao == -1) return '?';
-      var executor = certificado[6].substring(0, posicao);
-      executor = executor.replaceFirst('Técnico Executor-', '');
-      return executor;
+      final linha = certificado.firstWhere(
+          (e) => e.contains('Técnico Executor-'), orElse: () => '');
+      if (linha.isEmpty) return '?';
+      final posicao = linha.indexOf('Técnico Responsável-');
+      if (posicao == -1) return '?';
+      return linha.substring(0, posicao).replaceFirst('Técnico Executor-', '');
     }
     if (versao == 'VT3021') {
-      return certificado[5].replaceFirst('Técnico Executor-', '');
+      return certificado
+          .firstWhere((e) => e.contains('Técnico Executor-'), orElse: () => '?')
+          .replaceFirst('Técnico Executor-', '');
     }
     return '';
   }
 
   _getTecnicoResponsavel() {
     if (versao == 'VT3012') {
-      var resp = certificado[6].replaceFirst('Técnico Responsável-', '|');
-      resp = resp.split('|')[1];
-      return resp;
+      final linha = certificado.firstWhere(
+          (e) => e.contains('Técnico Responsável-'), orElse: () => '');
+      if (linha.isEmpty) return '?';
+      return linha.split('Técnico Responsável-')[1];
     }
     if (versao == 'VT3021') {
-      return certificado[6].replaceFirst('Técnico Responsável-', '');
+      return certificado
+          .firstWhere((e) => e.contains('Técnico Responsável-'),
+              orElse: () => '?')
+          .replaceFirst('Técnico Responsável-', '');
     }
     return '';
   }
@@ -244,7 +264,9 @@ class CertificadoExtractor {
           .toString();
       return int.tryParse(capTotal.replaceAll('.', ''));
     }
-    return int.tryParse(certificado[13].replaceAll('.', ''));
+    final idx = certificado.indexWhere(
+        (e) => e.startsWith('Nº do INMETRO: Nº de Compartimentos:'));
+    return int.tryParse(certificado[idx + 2].replaceAll('.', ''));
   }
 
   _getLetrasTanque() {

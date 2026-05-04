@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//home/nokaut/Documentos/Projetos/vtr_util/**)",
+      "Bash(grep -E \"\\\\.\\(pdf|json\\)$\")"
+    ]
+  }
+}
